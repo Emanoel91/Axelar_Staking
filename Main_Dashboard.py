@@ -78,9 +78,40 @@ def load_staking_totals(start_date, end_date):
     """
     return pd.read_sql(query, conn).iloc[0]
 
+@st.cache_data
+def load_staking_stats(start_date, end_date):
+    query = f"""
+        WITH tab1 AS (
+            SELECT
+                COUNT(DISTINCT tx_id) AS "Stakes",
+                COUNT(DISTINCT delegator_address) AS "Stakers",
+                ROUND(AVG(amount / POW(10, 6)), 2) AS "Average Staked Tokens per Txn",
+                ROUND(COUNT(DISTINCT tx_id)::numeric / NULLIF(COUNT(DISTINCT delegator_address), 0), 2) AS "Avg Stakes per User",
+                ROUND(SUM(amount / POW(10, 6)) / NULLIF(COUNT(DISTINCT delegator_address), 0), 2) AS "Avg Staked per User"
+            FROM axelar.gov.fact_staking
+            WHERE action = 'delegate'
+              AND TX_SUCCEEDED = 'TRUE'
+              AND block_timestamp::date >= '{start_date}'
+              AND block_timestamp::date <= '{end_date}'
+        ),
+        tab2 AS (
+            SELECT
+                COUNT(DISTINCT tx_id) AS "UnStakes"
+            FROM axelar.gov.fact_staking
+            WHERE action = 'undelegate'
+              AND TX_SUCCEEDED = 'TRUE'
+              AND block_timestamp::date >= '{start_date}'
+              AND block_timestamp::date <= '{end_date}'
+        )
+        SELECT * FROM tab1, tab2;
+    """
+    df = pd.read_sql(query, conn)
+    df.columns = df.columns.str.lower()
+    return df.iloc[0]
+
 # --- Load Data ----------------------------------------------------------------------------------------
 staking_totals = load_staking_totals(start_date, end_date)
-
+staking_stats = load_staking_stats(start_date, end_date)
 # ------------------------------------------------------------------------------------------------------
 
 # --- Row 1: Metrics ---
@@ -90,4 +121,16 @@ col1, col2, col3 = st.columns(3)
 col1.metric("Total Amount Staked", f"{staking_totals['total_staked']:,} AXL")
 col2.metric("Total Amount UnStaked", f"{staking_totals['total_unstaked']:,} AXL")
 col3.metric("Total Amount Net Staked", f"{staking_totals['total_net_staked']:,} AXL")
+
+# --- Row 2 ---
+col1, col2, col3 = st.columns(3)
+col1.metric("Total Number of Stakes", f"{staking_stats['stakes']:,}")
+col2.metric("Total Number of Stakers", f"{staking_stats['stakers']:,}")
+col3.metric("Total Number of UnStakes", f"{staking_stats['unstakes']:,}")
+
+# --- Row 3 ---
+col4, col5, col6 = st.columns(3)
+col4.metric("Average Staked Amount (per Txn)", f"{staking_stats['average staked tokens per txn']:,} AXL")
+col5.metric("Average Staked Amount (per User)", f"{staking_stats['avg staked per user']:,} AXL")
+col6.metric("Average Number of Stakes per User", f"{staking_stats['avg stakes per user']:,}")
 
