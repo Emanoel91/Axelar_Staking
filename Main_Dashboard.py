@@ -252,8 +252,8 @@ fig.add_trace(go.Scatter(
 fig.update_layout(
     title="Weekly Net Staked Volume ($AXL)",
     barmode="group",
-    yaxis=dict(title="Staked / UnStaked Amount ($AXL)"),
-    yaxis2=dict(title="Net Staked Amount ($AXL)", overlaying="y", side="right"),
+    yaxis=dict(title="($AXL)"),
+    yaxis2=dict(title="($AXL)", overlaying="y", side="right"),
     legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
     xaxis=dict(title="Date"),
     template="plotly_white"
