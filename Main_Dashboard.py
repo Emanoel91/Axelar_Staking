@@ -166,11 +166,32 @@ def load_weekly_net_stake(start_date, end_date):
     """
     return pd.read_sql(query, conn)
 
+@st.cache_data
+def load_action_type_share(start_date, end_date):
+    query = f"""
+        SELECT
+          CASE
+              WHEN action = 'delegate' THEN 'Stake'
+              WHEN action = 'undelegate' THEN 'UnStake'
+              ELSE 'Other'
+          END AS "Action Type",
+          COUNT(DISTINCT tx_id) AS "Txns Count",
+          COUNT(DISTINCT delegator_address) AS "Users Count",
+          ROUND((SUM(amount) / POW(10, 6)), 2) AS "Volume"
+        FROM axelar.gov.fact_staking
+        WHERE action IN ('delegate', 'undelegate')
+          AND block_timestamp::date >= '{start_date}'
+          AND block_timestamp::date <= '{end_date}'
+        GROUP BY 1
+    """
+    return pd.read_sql(query, conn)
+
 # --- Load Data ----------------------------------------------------------------------------------------
 staking_totals = load_staking_totals(start_date, end_date)
 staking_stats = load_staking_stats(start_date, end_date)
 stake_activity = load_weekly_stake_activity(start_date, end_date)
 weekly_net_stake = load_weekly_net_stake(start_date, end_date)
+action_share = load_action_type_share(start_date, end_date)
 # ------------------------------------------------------------------------------------------------------
 
 # --- Row 1: Metrics ---
@@ -260,4 +281,46 @@ fig.update_layout(
 )
 
 st.plotly_chart(fig, use_container_width=True)
+
+# -- Row 6 ------
+
+# --- Donut Chart: Share of Transactions ---
+fig_txns = px.pie(
+    action_share,
+    names="Action Type",
+    values="Txns Count",
+    title="Share of Transactions",
+    hole=0.5,
+    color="Action Type",
+    color_discrete_map={"Stake": "green", "UnStake": "red"}
+)
+
+# --- Donut Chart: Share of Volume ---
+fig_volume = px.pie(
+    action_share,
+    names="Action Type",
+    values="Volume",
+    title="Share of Volume ($AXL)",
+    hole=0.5,
+    color="Action Type",
+    color_discrete_map={"Stake": "green", "UnStake": "red"}
+)
+
+# --- Bar Chart: Share of Users ---
+fig_users = px.bar(
+    action_share,
+    x="Action Type",
+    y="Users Count",
+    title="Share of Users",
+    text="Users Count",
+    color="Action Type",
+    color_discrete_map={"Stake": "green", "UnStake": "red"}
+)
+fig_users.update_traces(texttemplate='%{text}', textposition='outside')
+fig_users.update_layout(yaxis_title="Users Count")
+
+col1, col2, col3 = st.columns(3)
+col1.plotly_chart(fig_txns, use_container_width=True)
+col2.plotly_chart(fig_volume, use_container_width=True)
+col3.plotly_chart(fig_users, use_container_width=True)
 
