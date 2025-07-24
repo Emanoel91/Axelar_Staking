@@ -109,9 +109,31 @@ def load_staking_stats(start_date, end_date):
     df.columns = df.columns.str.lower()
     return df.iloc[0]
 
+@st.cache_data
+def load_weekly_stake_activity(start_date, end_date):
+    query = f"""
+        SELECT
+          TRUNC(block_timestamp,'week') AS "Date",
+          CASE 
+               WHEN action = 'delegate' THEN 'Stake'
+               WHEN action = 'undelegate' THEN 'UnStake'
+               ELSE 'Other'
+          END AS "Action Type",
+          COUNT(DISTINCT tx_id) AS "Txns Count",
+          COUNT(DISTINCT delegator_address) AS "Users Count"
+        FROM axelar.gov.fact_staking
+        WHERE action IN ('delegate', 'undelegate')
+          AND block_timestamp::date >= '{start_date}'
+          AND block_timestamp::date <= '{end_date}'
+        GROUP BY 1,2
+        ORDER BY 1
+    """
+    return pd.read_sql(query, conn)
+
 # --- Load Data ----------------------------------------------------------------------------------------
 staking_totals = load_staking_totals(start_date, end_date)
 staking_stats = load_staking_stats(start_date, end_date)
+stake_activity = load_weekly_stake_activity(start_date, end_date)
 # ------------------------------------------------------------------------------------------------------
 
 # --- Row 1: Metrics ---
@@ -133,4 +155,29 @@ col4, col5, col6 = st.columns(3)
 col4.metric("Average Staked Amount (per Txn)", f"{staking_stats['average staked tokens per txn']:,} AXL")
 col5.metric("Average Staked Amount (per User)", f"{staking_stats['avg staked per user']:,} AXL")
 col6.metric("Average Number of Stakes per User", f"{staking_stats['avg stakes per user']:,}")
+
+# --- Row 4 ---
+# --- chart 1 ---
+fig1 = px.line(
+    stake_activity,
+    x="Date",
+    y="Txns Count",
+    color="Action Type",
+    markers=True,
+    title="Weekly Number of Transactions: Stake vs. UnStake"
+)
+
+# --- chart 2 ---
+fig2 = px.line(
+    stake_activity,
+    x="Date",
+    y="Users Count",
+    color="Action Type",
+    markers=True,
+    title="Weekly Number of Users: Stake vs. UnStake"
+)
+
+col1, col2 = st.columns(2)
+col1.plotly_chart(fig1, use_container_width=True)
+col2.plotly_chart(fig2, use_container_width=True)
 
