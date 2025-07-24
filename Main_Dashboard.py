@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 # --- Page Config: Tab Title & Icon ---
 st.set_page_config(
     page_title="Squid: Chain Swaps",
-    page_icon="https://axelarscan.io/logos/accounts/squid.svg",
+    page_icon="https://pbs.twimg.com/profile_images/1877235283755778048/4nlylmxm_400x400.jpg",
     layout="wide"
 )
 
