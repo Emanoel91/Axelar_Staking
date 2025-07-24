@@ -130,10 +130,47 @@ def load_weekly_stake_activity(start_date, end_date):
     """
     return pd.read_sql(query, conn)
 
+@st.cache_data
+def load_weekly_net_stake(start_date, end_date):
+    query = f"""
+        WITH delegate AS (
+            SELECT
+                TRUNC(block_timestamp, 'week') AS date,
+                SUM(amount / POW(10, 6)) AS amount_staked
+            FROM axelar.gov.fact_staking
+            WHERE action = 'delegate'
+              AND TX_SUCCEEDED = 'TRUE'
+              AND block_timestamp::date >= '{start_date}'
+              AND block_timestamp::date <= '{end_date}'
+            GROUP BY 1
+        ),
+        undelegate AS (
+            SELECT
+                TRUNC(block_timestamp, 'week') AS date,
+                SUM(amount / POW(10, 6)) * -1 AS amount_unstaked
+            FROM axelar.gov.fact_staking
+            WHERE action = 'undelegate'
+              AND TX_SUCCEEDED = 'TRUE'
+              AND block_timestamp::date >= '{start_date}'
+              AND block_timestamp::date <= '{end_date}'
+            GROUP BY 1
+        )
+        SELECT
+            a.date AS "Date",
+            ROUND(amount_staked, 2) AS "Staked Amount",
+            ROUND(amount_unstaked, 2) AS "UnStaked Amount",
+            ROUND((amount_staked + amount_unstaked), 2) AS "Net Staked Amount"
+        FROM delegate a
+        LEFT OUTER JOIN undelegate b ON a.date = b.date
+        ORDER BY 1
+    """
+    return pd.read_sql(query, conn)
+
 # --- Load Data ----------------------------------------------------------------------------------------
 staking_totals = load_staking_totals(start_date, end_date)
 staking_stats = load_staking_stats(start_date, end_date)
 stake_activity = load_weekly_stake_activity(start_date, end_date)
+weekly_net_stake = load_weekly_net_stake(start_date, end_date)
 # ------------------------------------------------------------------------------------------------------
 
 # --- Row 1: Metrics ---
@@ -180,4 +217,47 @@ fig2 = px.line(
 col1, col2 = st.columns(2)
 col1.plotly_chart(fig1, use_container_width=True)
 col2.plotly_chart(fig2, use_container_width=True)
+
+# --- Row 5 --------
+fig = go.Figure()
+
+# --- Staked Amount (Bar) ---
+fig.add_trace(go.Bar(
+    x=weekly_net_stake["Date"],
+    y=weekly_net_stake["Staked Amount"],
+    name="Staked Amount",
+    marker_color="green",
+    yaxis="y1"
+))
+
+# --- UnStaked Amount (Bar) ---
+fig.add_trace(go.Bar(
+    x=weekly_net_stake["Date"],
+    y=weekly_net_stake["UnStaked Amount"],
+    name="UnStaked Amount",
+    marker_color="red",
+    yaxis="y1"
+))
+
+# --- Net Staked Amount (Line, Secondary Y-axis) ---
+fig.add_trace(go.Scatter(
+    x=weekly_net_stake["Date"],
+    y=weekly_net_stake["Net Staked Amount"],
+    name="Net Staked Amount",
+    mode="lines+markers",
+    line=dict(color="blue", width=2),
+    yaxis="y2"
+))
+
+fig.update_layout(
+    title="Weekly Net Staked Volume ($AXL)",
+    barmode="group",
+    yaxis=dict(title="Staked / UnStaked Amount ($AXL)"),
+    yaxis2=dict(title="Net Staked Amount ($AXL)", overlaying="y", side="right"),
+    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+    xaxis=dict(title="Date"),
+    template="plotly_white"
+)
+
+st.plotly_chart(fig, use_container_width=True)
 
