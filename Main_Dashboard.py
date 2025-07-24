@@ -86,7 +86,7 @@ def load_staking_stats(start_date, end_date):
                 COUNT(DISTINCT tx_id) AS "Stakes",
                 COUNT(DISTINCT delegator_address) AS "Stakers",
                 ROUND(AVG(amount / POW(10, 6)), 2) AS "Average Staked Tokens per Txn",
-                ROUND(COUNT(DISTINCT tx_id)::numeric / NULLIF(COUNT(DISTINCT delegator_address), 0), 2) AS "Avg Stakes per User",
+                ROUND(COUNT(DISTINCT tx_id)::numeric / NULLIF(COUNT(DISTINCT delegator_address), 0)) AS "Avg Stakes per User",
                 ROUND(SUM(amount / POW(10, 6)) / NULLIF(COUNT(DISTINCT delegator_address), 0), 2) AS "Avg Staked per User"
             FROM axelar.gov.fact_staking
             WHERE action = 'delegate'
