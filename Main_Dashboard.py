@@ -34,7 +34,7 @@ start_date = st.date_input("Start Date", value=pd.to_datetime("2022-01-01"))
 end_date = st.date_input("End Date", value=pd.to_datetime("2025-06-01"))
 
 # --- Query Functions ---------------------------------------------------------------------------------------
-# --- Row 10: Total Amounts Staked, Unstaked, and Net Staked ---
+# --- Row 1: Total Amounts Staked, Unstaked, and Net Staked ---
 
 @st.cache_data
 def load_staking_totals(start_date, end_date):
@@ -84,7 +84,10 @@ staking_totals = load_staking_totals(start_date, end_date)
 # ------------------------------------------------------------------------------------------------------
 
 # --- Row 1: Metrics ---
+staking_totals.index = staking_totals.index.str.lower()
+
 col1, col2, col3 = st.columns(3)
 col1.metric("Total Amount Staked", f"{staking_totals['total_staked']:,} AXL")
 col2.metric("Total Amount UnStaked", f"{staking_totals['total_unstaked']:,} AXL")
 col3.metric("Total Amount Net Staked", f"{staking_totals['total_net_staked']:,} AXL")
+
