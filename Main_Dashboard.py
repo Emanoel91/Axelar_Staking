@@ -11,7 +11,13 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("📋Chains Activities")
+st.title("📊Axelar Staking")
+
+st.markdown("""
+The AXL token is the native cryptocurrency of the Axelar network, a decentralized blockchain interoperability platform designed to 
+connect multiple blockchains, enabling seamless cross-chain communication and asset transfers. Staking AXL tokens involves locking 
+them in the Axelar network to support its operations and security, in return for earning rewards.
+""")
 
 # --- Snowflake Connection ---
 conn = snowflake.connector.connect(
