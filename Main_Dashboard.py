@@ -343,6 +343,11 @@ fig_users = px.bar(
 fig_users.update_traces(texttemplate='%{text}', textposition='outside')
 fig_users.update_layout(yaxis_title="Users Count")
 
+col1, col2, col3 = st.columns(3)
+col1.plotly_chart(fig_txns, use_container_width=True)
+col2.plotly_chart(fig_volume, use_container_width=True)
+col3.plotly_chart(fig_users, use_container_width=True)
+
 
 # --- Reference and Rebuild Info --------------------------------------------------------------------------------------
 st.markdown(
@@ -361,7 +366,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# --- Links with Logos --------------------------------------------------------------------------------------------------------------
+# --- Links with Logos ---------------------------------------------------------------------------------------
 st.markdown(
     """
     <div style="font-size: 16px;">
@@ -383,9 +388,8 @@ st.markdown(
         </div>
     </div>
     """,
+    unsafe_allow_html=True
+)
 
-col1, col2, col3 = st.columns(3)
-col1.plotly_chart(fig_txns, use_container_width=True)
-col2.plotly_chart(fig_volume, use_container_width=True)
-col3.plotly_chart(fig_users, use_container_width=True)
+
 
