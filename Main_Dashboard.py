@@ -375,17 +375,10 @@ st.markdown(
             <a href="https://www.axelar.network/" target="_blank">https://www.axelar.network/</a>
         </div>
         <div style="display: flex; align-items: center; gap: 10px;">
-            <img src="https://axelarscan.io/logos/accounts/squid.svg" alt="Squid" style="width:20px; height:20px;">
-            <a href="https://www.squidrouter.com/" target="_blank">https://www.squidrouter.com/</a>
-        </div>
-        <div style="display: flex; align-items: center; gap: 10px;">
             <img src="https://cdn-icons-png.flaticon.com/512/5968/5968958.png" alt="X" style="width:20px; height:20px;">
             <a href="https://x.com/axelar" target="_blank">https://x.com/axelar</a>
         </div>
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <img src="https://cdn-icons-png.flaticon.com/512/5968/5968958.png" alt="X" style="width:20px; height:20px;">
-            <a href="https://x.com/squidrouter" target="_blank">https://x.com/squidrouter</a>
-        </div>
+        
     </div>
     """,
     unsafe_allow_html=True
