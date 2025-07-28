@@ -34,7 +34,16 @@ them in the Axelar network to support its operations and security, in return for
     unsafe_allow_html=True
 )
 
-# --- Snowflake Connection ---
+st.info(
+    "📊Charts initially display data for a default time range. Select a custom range to view results for your desired period."
+
+)
+
+st.info(
+    "⏳On-chain data retrieval may take a few moments. Please wait while the results load."
+)
+
+# --- Snowflake Connection --------------------------------------------------------------------------------------------------
 conn = snowflake.connector.connect(
     user=st.secrets["snowflake"]["user"],
     password=st.secrets["snowflake"]["password"],
