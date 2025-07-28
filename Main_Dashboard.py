@@ -343,6 +343,47 @@ fig_users = px.bar(
 fig_users.update_traces(texttemplate='%{text}', textposition='outside')
 fig_users.update_layout(yaxis_title="Users Count")
 
+
+# --- Reference and Rebuild Info --------------------------------------------------------------------------------------
+st.markdown(
+    """
+    <div style="margin-top: 20px; margin-bottom: 20px; font-size: 16px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+            <img src="https://cdn-icons-png.flaticon.com/512/3178/3178287.png" alt="Reference" style="width:20px; height:20px;">
+            <span>Dashboard Reference: <a href="https://flipsidecrypto.xyz/Sniper/axelar-staking-NU6QUG" target="_blank">https://flipsidecrypto.xyz/Sniper/axelar-staking-NU6QUG/</a></span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <img src="https://pbs.twimg.com/profile_images/1841479747332608000/bindDGZQ_400x400.jpg" alt="Eman Raz" style="width:25px; height:25px; border-radius: 50%;">
+            <span>Rebuilt by: <a href="https://x.com/0xeman_raz" target="_blank">Eman Raz</a></span>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+# --- Links with Logos --------------------------------------------------------------------------------------------------------------
+st.markdown(
+    """
+    <div style="font-size: 16px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <img src="https://axelarscan.io/logos/logo.png" alt="Axelar" style="width:20px; height:20px;">
+            <a href="https://www.axelar.network/" target="_blank">https://www.axelar.network/</a>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <img src="https://axelarscan.io/logos/accounts/squid.svg" alt="Squid" style="width:20px; height:20px;">
+            <a href="https://www.squidrouter.com/" target="_blank">https://www.squidrouter.com/</a>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <img src="https://cdn-icons-png.flaticon.com/512/5968/5968958.png" alt="X" style="width:20px; height:20px;">
+            <a href="https://x.com/axelar" target="_blank">https://x.com/axelar</a>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <img src="https://cdn-icons-png.flaticon.com/512/5968/5968958.png" alt="X" style="width:20px; height:20px;">
+            <a href="https://x.com/squidrouter" target="_blank">https://x.com/squidrouter</a>
+        </div>
+    </div>
+    """,
+
 col1, col2, col3 = st.columns(3)
 col1.plotly_chart(fig_txns, use_container_width=True)
 col2.plotly_chart(fig_volume, use_container_width=True)
