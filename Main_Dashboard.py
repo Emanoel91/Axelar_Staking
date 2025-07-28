@@ -16,7 +16,7 @@ st.title("📊Axelar Staking")
 # --- Info Box ---
 st.markdown(
     """
-    <div style="background-color: #e6fa36; padding: 15px; border-radius: 10px; border: 1px solid #ffd700;">
+    <div style="background-color: #ffc6a0; padding: 15px; border-radius: 10px; border: 1px solid #ffd700;">
         The AXL token is the native cryptocurrency of the Axelar network, a decentralized blockchain interoperability platform designed to 
 connect multiple blockchains, enabling seamless cross-chain communication and asset transfers. Staking AXL tokens involves locking 
 them in the Axelar network to support its operations and security, in return for earning rewards.
