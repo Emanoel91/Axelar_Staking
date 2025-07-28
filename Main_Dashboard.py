@@ -4,16 +4,25 @@ import snowflake.connector
 import plotly.express as px
 import plotly.graph_objects as go
 
-# --- Page Config: Tab Title & Icon ---
+# --- Page Config: Tab Title & Icon -------------------------------------------------------------------------------------
 st.set_page_config(
     page_title="Axelar Staking",
     page_icon="https://pbs.twimg.com/profile_images/1877235283755778048/4nlylmxm_400x400.jpg",
     layout="wide"
 )
 
-st.title("📊Axelar Staking")
+# --- Title with Logo ---------------------------------------------------------------------------------------------------
+st.markdown(
+    """
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <img src="https://axelarscan.io/logos/chains/axelarnet.svg" alt="Axelar Logo" style="width:60px; height:60px;">
+        <h1 style="margin: 0;">Axelar Staking</h1>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
-# --- Info Box ---
+# --- Info Box --------------------------------------------------------------------------------------------------------------
 st.markdown(
     """
     <div style="background-color: #ffc6a0; padding: 15px; border-radius: 10px; border: 1px solid #ffd700;">
